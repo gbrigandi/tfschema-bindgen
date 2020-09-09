@@ -10,27 +10,29 @@ This crate aims to compile schemas extracted from Terraform into Serde type defi
 
 ### Quick Start
 
-A Terraform schema is required for generating the Rust types responsible of deserialization and serialization from Rust.
+A Terraform schema is required for generating Rust types responsible of deserialization and serialization.
 It can either be exported from your Terraform plan or manually generated.
-We'll take the latter approach, defining an reference schema with just one provider type, exposing just one attribute :
+We'll take the latter approach, therefore defining a reference schema with just one provider type having one attribute:
 
 ```json
 {
-  "provider_schemas" : {
-   "test_provider" : {
-      "provider" : {
-         "version" : 0,
-         "block" : {
-            "attributes" : {
-               "base_url" : {
-                  "type" : "string",
-                  "description" : "The url.",
-                  "optional" : true
+   "provider_schemas": {
+       "test_provider": {
+           "provider": {
+               "version": 0,
+               "block": {
+                   "attributes": {
+                       "base_url": {
+                           "type": "string",
+                           "description": "The url.",
+                           "optional": true
+                       }
+                   }
                }
            }
        }
    },
-"format_version" : "0.1"
+   "format_version": "0.1"
 }
 ```
 
@@ -46,13 +48,14 @@ Then use `$HOME/.cargo/bin/tfbindgen`.
 
 We're going to use this tool assuming that we're inside the repository.
 
-The following command will generate Rust class definitions from the previous definitions written in the 'test.json' file and write them into `test.rs`:
+The following command will generate Serde bindings from the previous definitions, outputting those to `test.rs` module:
 
 ```bash
 cargo run --bin tfbindgen -- test.json > test.rs
 ```
 
-This is how the generated Rust definitions followed by how these can be consumed for parsing a Terraform configuration descriptor :
+The following is a Rust example snippet comprising the previously generated bindings and a main function building on these in order
+deserialize a configuration descriptor adhering to our Terraform schema:
 
 ```rust
 #![allow(unused_imports, non_snake_case, non_camel_case_types, non_upper_case_globals)]
@@ -124,11 +127,45 @@ fn main() -> Result<(), std::io::Error> {
 ### Quickstart Example
 
 In addition to a Rust library and generation tool, this crate provides the above example which
-can be executed using the following command :
+can be executed using the following command:
 
 ```bash
 cargo run --example quickstart
 ```
+
+### Consuming third-party Terraform schemas
+
+In order to operate on Terraform configuration descriptors of third-party providers, Rust bindings have to be generated using the
+provided schema descriptor in the JSON format.
+
+Firstly, create a minimal Terraform plan referring declaring the target provider. The following is an example for enabling
+the Amazon Web Services (AWS) Terraform provider:
+
+```json
+provider "aws" {
+ version = ">= 2.31.0, < 3.0"
+}
+```
+
+Initialize the Terraform plan so that the provider is installed in the local environment:
+
+```bash
+terraform init
+```
+
+Secondly, extract the schema for the providers defined in the Terraform plan, AWS in this case:
+
+```rust
+terraform providers schema -json > aws-provider-schema.json
+```
+
+Finally, generate the Rust (de)serialization types for the given provider using the following command (assuming you are inside the repository):
+
+```bash
+cargo run --bin tfbindgen -- aws-provider-schema.json > aws_provider_schema.rs
+```
+
+In order do (de)serialize provider's configuration, import the generated module in your application.
 
 
 ## License

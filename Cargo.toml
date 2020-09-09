@@ -7,8 +7,8 @@ repository = "https://github.com/gbrigandi/tfschema-bindgen"
 authors = ["Gianluca Brigandi <gbrigand@gmail.com>"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
-keywords = ["data-structures", "serialization", "serde"]
-categories = ["encoding", "development-tools"]
+keywords = ["terraform", "hashicorp", "infrastructure", "data-structures", "serialization", "serde"]
+categories = ["command-line-utilities", "encoding", "development-tools"]
 edition = "2018"
 exclude = [
     # Readme template that doesn't need to be included.

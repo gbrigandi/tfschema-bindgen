@@ -286,17 +286,20 @@ fn export_block(
         for (block_type_name, nested_block) in bt {
             if let Some(attrs) = &nested_block.block.attributes {
                 let nested_cf = export_attributes(attrs)?;
-                let block_type_ns = namespace
-                    .clone()
-                    .map(|v| format!("{}_{}_block_type", name, v));
-                let block_type_fqn = namespace
-                    .clone()
-                    .map(|v| format!("{}_{}_block_type_{}", name, v, block_type_name.to_owned()));
+                let block_type_ns = namespace.clone().map_or_else(
+                    || format!("{}_block_type", name),
+                    |v| format!("{}_{}_block_type", name, v),
+                );
+                let block_type_fqn = namespace.clone().map_or_else(
+                    || format!("{}_block_type_{}", name, block_type_name.to_owned()),
+                    |v| format!("{}_{}_block_type_{}", name, v, block_type_name.to_owned()),
+                );
+
                 reg.insert(
-                    (block_type_ns.clone(), block_type_name.to_owned()),
+                    (Some(block_type_ns), block_type_name.to_owned()),
                     nested_cf.unwrap(),
                 );
-                inner_block_types.push((block_type_name, block_type_fqn.unwrap()));
+                inner_block_types.push((block_type_name, block_type_fqn));
             }
         }
 
