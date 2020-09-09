@@ -26,22 +26,22 @@
 //! }
 //! ```
 //!
-//! In addition to a Rust library, this crate provides a binary tool `tf-schemabindgen` to process Terraform schemas
+//! In addition to a Rust library, this crate provides a binary tool `tfbindgen` to process Terraform schemas
 //! saved on disk.
 //! Outside of this repository, you may install the tool with:
 //!
 //! ```bash
-//! cargo install tf-schemabindgen
+//! cargo install tfschema-bindgen
 //! ```
 //!
-//! Then use `$HOME/.cargo/bin/tfschema-bindgen`.
+//! Then use `$HOME/.cargo/bin/tfbindgen`.
 //!
 //! We're going to use this tool assuming that we're inside the repository.
 //!
 //! The following command will generate Rust class definitions from the previous definitions written in the 'test.json' file and write them into `test.rs`:
 //!
 //! ```bash
-//! cargo run --bin tfschema-bindgen -- test.json > test.rs
+//! cargo run --bin tfbindgen -- test.json > test.rs
 //! ```
 //!
 //! This is how the generated Rust definitions followed by how these can be consumed for parsing a Terraform configuration descriptor :
