@@ -1,0 +1,46 @@
+[package]
+name = "tfschema-bindgen"
+version = "0.1.0"
+description = "Generate (de)serialization Rust code for Terraform Schema"
+documentation = "https://docs.rs/tfschema-bindgen"
+repository = "https://github.com/gbrigandi/tfschema-bindgen"
+authors = ["Gianluca Brigandi <gbrigand@gmail.com>"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["data-structures", "serialization", "serde"]
+categories = ["encoding", "development-tools"]
+edition = "2018"
+exclude = [
+    # Readme template that doesn't need to be included.
+    "README.tpl",
+]
+
+[dependencies]
+serde-generate = "0.12.1"
+
+serde-reflection = "0.3.1"
+
+serde_json = "1.0"
+
+serde = { version = "1.0", features = ["derive"] }
+
+serde_bytes = "0.11.3"
+
+structopt = "0.3.12"
+
+textwrap = "0.12.1"
+
+[dev-dependencies]
+tempfile = "3.1"
+
+[[bin]]
+name = "tfbindgen"
+path = "src/generate.rs"
+test = false
+
+[profile.release]
+debug = true
+lto = 'thin'
+
+[profile.bench]
+debug = true
