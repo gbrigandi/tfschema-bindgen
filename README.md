@@ -1,5 +1,6 @@
 # tfschema-bindgen
 
+[![Build Status](https://circleci.com/gh/gbrigandi/tfschema-bindgen.svg?style=shield)](https://circleci.com/gh/gbrigandi/tfschema-bindgen/tree/master)
 [![tfschena-bindgen on crates.io](https://img.shields.io/crates/v/tfschema-bindgen)](https://crates.io/crates/tfschema-bindgen)
 [![Documentation (latest release)](https://docs.rs/tfschema-bindgen/badge.svg)](https://docs.rs/tfschema-bindgen/)
 [![License](https://img.shields.io/badge/license-Apache-green.svg)](../LICENSE-APACHE)
