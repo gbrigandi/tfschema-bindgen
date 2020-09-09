@@ -1,6 +1,6 @@
 [package]
 name = "tfschema-bindgen"
-version = "0.1.2"
+version = "0.1.3"
 description = "Generate (de)serialization Rust code for Terraform Schema"
 documentation = "https://docs.rs/tfschema-bindgen"
 repository = "https://github.com/gbrigandi/tfschema-bindgen"
