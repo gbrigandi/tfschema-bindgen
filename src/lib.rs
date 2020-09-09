@@ -133,7 +133,7 @@
 //! Firstly, create a minimal Terraform plan referring declaring the target provider. The following is an example for enabling
 //! the Amazon Web Services (AWS) Terraform provider:
 //!
-//! ```json
+//! ```
 //! provider "aws" {
 //!  version = ">= 2.31.0, < 3.0"
 //!}

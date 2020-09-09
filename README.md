@@ -141,7 +141,7 @@ provided schema descriptor in the JSON format.
 Firstly, create a minimal Terraform plan referring declaring the target provider. The following is an example for enabling
 the Amazon Web Services (AWS) Terraform provider:
 
-```json
+```rust
 provider "aws" {
  version = ">= 2.31.0, < 3.0"
 }
@@ -155,7 +155,7 @@ terraform init
 
 Secondly, extract the schema for the providers defined in the Terraform plan, AWS in this case:
 
-```rust
+```bash
 terraform providers schema -json > aws-provider-schema.json
 ```
 
