@@ -172,6 +172,10 @@ where
                 self.out,
                 "#[serde(skip_serializing_if = \"Option::is_none\")]"
             )?,
+            Seq(_) => writeln!(
+                self.out,
+                "#[serde(skip_serializing_if = \"Vec::is_empty\")]"
+            )?,
             _ => (),
         }
 
