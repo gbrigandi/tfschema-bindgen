@@ -165,9 +165,9 @@ where
         use Format::*;
         match format {
             Str =>
-                write!(self.out, "#[serde(skip_serializing_if = \"String::is_empty\")]\n")?,
+                writeln!(self.out, "#[serde(skip_serializing_if = \"String::is_empty\")]")?,
             Option(_) =>
-                write!(self.out, "#[serde(skip_serializing_if = \"Option::is_none\")]\n")?,
+                writeln!(self.out, "#[serde(skip_serializing_if = \"Option::is_none\")]")?,
             _ => ()
         }
 
