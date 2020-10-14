@@ -161,6 +161,19 @@ where
         Ok(())
     }
 
+    fn output_field_annotation(&mut self, format: &Format) -> std::io::Result<()> {
+        use Format::*;
+        match format {
+            Str =>
+                write!(self.out, "#[serde(skip_serializing_if = \"String::is_empty\")]\n")?,
+            Option(_) =>
+                write!(self.out, "#[serde(skip_serializing_if = \"Option::is_none\")]\n")?,
+            _ => ()
+        }
+
+        Ok(())
+    }
+
     fn quote_type(format: &Format, known_sizes: Option<&HashSet<&str>>) -> String {
         use Format::*;
         match format {
@@ -223,6 +236,7 @@ where
         };
         for field in fields {
             self.output_comment(&field.name)?;
+            self.output_field_annotation(&field.value)?;
             writeln!(
                 self.out,
                 "{}{}: {},",
@@ -319,6 +333,10 @@ where
             ),
             Struct(fields) => {
                 let mut struct_name = name.to_string();
+                prefix.clear();
+                derive_macros.push("Default".to_string());
+                prefix.push_str(&format!("#[derive({})]\n", derive_macros.join(", ")));
+        
                 if let Some(ns) = namespace {
                     prefix.push_str(&format!("#[serde(rename = \"{}\")]\n", name));
                     struct_name = format!("{}_{}", ns, name)
