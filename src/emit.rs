@@ -164,11 +164,15 @@ where
     fn output_field_annotation(&mut self, format: &Format) -> std::io::Result<()> {
         use Format::*;
         match format {
-            Str =>
-                writeln!(self.out, "#[serde(skip_serializing_if = \"String::is_empty\")]")?,
-            Option(_) =>
-                writeln!(self.out, "#[serde(skip_serializing_if = \"Option::is_none\")]")?,
-            _ => ()
+            Str => writeln!(
+                self.out,
+                "#[serde(skip_serializing_if = \"String::is_empty\")]"
+            )?,
+            Option(_) => writeln!(
+                self.out,
+                "#[serde(skip_serializing_if = \"Option::is_none\")]"
+            )?,
+            _ => (),
         }
 
         Ok(())
@@ -336,7 +340,7 @@ where
                 prefix.clear();
                 derive_macros.push("Default".to_string());
                 prefix.push_str(&format!("#[derive({})]\n", derive_macros.join(", ")));
-        
+
                 if let Some(ns) = namespace {
                     prefix.push_str(&format!("#[serde(rename = \"{}\")]\n", name));
                     struct_name = format!("{}_{}", ns, name)
