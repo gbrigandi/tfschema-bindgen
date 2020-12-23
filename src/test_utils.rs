@@ -17,19 +17,19 @@ pub struct config {
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub enum datasource_root {
-    test_data_source_a(Box<Vec<Map<String, Vec<test_data_source_a_details>>>>),
-    test_data_source_b(Box<Vec<Map<String, Vec<test_data_source_b_details>>>>),
+    test_data_source_a(Vec<Map<String, Vec<test_data_source_a_details>>>),
+    test_data_source_b(Vec<Map<String, Vec<test_data_source_b_details>>>),
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub enum provider_root {
-    test_provider(Box<Vec<test_provider_details>>),
+    test_provider(Vec<test_provider_details>),
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub enum resource_root {
-    test_resource_a(Box<Vec<Map<String, Vec<test_resource_a_details>>>>),
-    test_resource_b(Box<Vec<Map<String, Vec<test_resource_b_details>>>>),
+    test_resource_a(Vec<Map<String, Vec<test_resource_a_details>>>),
+    test_resource_b(Vec<Map<String, Vec<test_resource_b_details>>>),
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
