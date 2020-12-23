@@ -314,7 +314,7 @@ where
         }
         if let Some(text) = &self.generator.custom_derive_block {
             prefix.push_str(text);
-            prefix.push_str("\n");
+            prefix.push('\n');
         }
 
         use ContainerFormat::*;
