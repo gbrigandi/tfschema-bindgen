@@ -1,37 +1,37 @@
 /*--- GENERATED START ---*/
-#![allow(
-    unused_imports,
-    non_snake_case,
-    non_camel_case_types,
-    non_upper_case_globals
-)]
-use serde::{Deserialize, Serialize};
-use serde_bytes::ByteBuf as Bytes;
+#![allow(unused_imports, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 use std::collections::BTreeMap as Map;
+use serde::{Serialize, Deserialize};
+use serde_bytes::ByteBuf as Bytes;
 
-#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct config {
-    pub datasource: Option<Vec<datasource_root>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<Vec<data_root>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub provider: Option<Vec<provider_root>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub resource: Option<Vec<resource_root>>,
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
-pub enum datasource_root {}
+pub enum data_root {
+}
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub enum provider_root {
-    test_provider(Box<Vec<test_provider_details>>),
+    test_provider(Vec<test_provider_details>),
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
-pub enum resource_root {}
+pub enum resource_root {
+}
 
-#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct test_provider_details {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub base_url: Option<String>,
 }
-
 /*--- GENERATED END ---*/
 
 const TF_JSON_CONFIG: &str = r#"{

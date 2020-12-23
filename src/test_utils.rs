@@ -5,7 +5,7 @@ use std::collections::BTreeMap as Map;
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub struct config {
-    pub datasource: Option<Vec<datasource_root>>,
+    pub data: Option<Vec<datasource_root>>,
     pub provider: Option<Vec<provider_root>>,
     pub resource: Option<Vec<resource_root>>,
 }

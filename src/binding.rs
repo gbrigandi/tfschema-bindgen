@@ -44,35 +44,35 @@ pub const RESERVED_WORDS: [&str; 32] = [
     "box",
 ];
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 enum Void {}
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct TerraformSchemaExport {
     provider_schemas: BTreeMap<String, Schema>,
     format_version: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Schema {
     provider: Provider,
     data_source_schemas: Option<BTreeMap<String, SchemaItem>>,
     resource_schemas: Option<BTreeMap<String, SchemaItem>>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Provider {
     version: i64,
     block: Block,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct SchemaItem {
     version: i64,
     block: Block,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Block {
     attributes: Option<BTreeMap<String, Attribute>>,
     block_types: Option<BTreeMap<String, NestedBlock>>,
@@ -84,7 +84,7 @@ pub enum StringKind {
     Markdown,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Attribute {
     r#type: AttributeType,
     description: Option<String>,
@@ -96,7 +96,7 @@ pub struct Attribute {
     deprecated: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct NestedBlock {
     block: Block,
     nesting_mode: Option<String>,
@@ -104,7 +104,7 @@ pub struct NestedBlock {
     max_items: Option<u8>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 struct AttributeType(Value);
 
 pub fn generate_serde(
@@ -124,19 +124,22 @@ pub fn export_schema_to_registry(
     let mut roots = BTreeMap::new();
     roots.insert("provider", Vec::<&str>::new());
     roots.insert("resource", Vec::<&str>::new());
-    roots.insert("datasource", Vec::<&str>::new());
+    roots.insert("data", Vec::<&str>::new());
 
     for (pn, pv) in &schema.provider_schemas {
         let ps = &pv.provider;
-        export_block(None, &pn, &ps.block, &mut r)?;
+        export_block(None, &pn, ps.block.clone(), &mut r)?;
         if let Some(provider) = roots.get_mut("provider") {
             provider.push(pn);
         }
 
         if let Some(rss) = &pv.resource_schemas {
             for (n, i) in rss {
-                let b = &i.block;
-                export_block(Some("resource".to_owned()), &n, &b, &mut r)?;
+                // add terraform meta-tags to block
+                let mut b = i.block.clone();
+                inject_meta_arguments(&mut b);
+
+                export_block(Some("resource".to_owned()), &n, b, &mut r)?;
                 if let Some(resources) = roots.get_mut("resource") {
                     resources.push(n);
                 }
@@ -145,9 +148,9 @@ pub fn export_schema_to_registry(
 
         if let Some(dss) = &pv.data_source_schemas {
             for (n, i) in dss {
-                let b = &i.block;
-                export_block(Some("data_source".to_owned()), &n, &b, &mut r)?;
-                if let Some(resources) = roots.get_mut("datasource") {
+                let b = i.block.clone();
+                export_block(Some("data_source".to_owned()), &n, b, &mut r)?;
+                if let Some(resources) = roots.get_mut("data") {
                     resources.push(n);
                 }
             }
@@ -158,6 +161,7 @@ pub fn export_schema_to_registry(
     }
     Ok(r)
 }
+
 
 fn generate_config(
     roots: &BTreeMap<&str, Vec<&str>>,
@@ -273,10 +277,48 @@ fn export_attributes(
     }
 }
 
+fn inject_meta_arguments(blk: &mut Block) {
+    let depends_on_attr = Attribute {
+        r#type: AttributeType(serde_json::json!(["set"])),
+        optional: Some(true),
+        ..Default::default()
+    };
+    let count_attr = Attribute {
+        r#type: AttributeType(serde_json::json!("number")),
+        optional: Some(true),
+        ..Default::default()
+    };
+
+    let for_each_attr = Attribute {
+        r#type: AttributeType(serde_json::json!(["set"])),
+        optional: Some(true),
+        ..Default::default()
+    };
+
+    let provider_attr = Attribute {
+        r#type: AttributeType(serde_json::json!("string")),
+        optional: Some(true),
+        ..Default::default()
+    };
+
+    match blk.attributes.as_mut() {
+        Some(attrs) => {
+            attrs.insert("depends_on".to_owned(), depends_on_attr);
+            attrs.insert("count".to_owned(), count_attr);
+            attrs.insert("for_each".to_owned(), for_each_attr);
+            attrs.insert("provider".to_owned(), provider_attr);
+            ()
+        },
+        None => (),
+    }
+
+}
+
+
 fn export_block(
     namespace: Option<String>,
     name: &str,
-    blk: &Block,
+    blk: Block,
     reg: &mut Registry,
 ) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let cf1 = export_attributes(&blk.attributes.as_ref().unwrap())?;
@@ -474,13 +516,13 @@ mod test {
     fn test_unmarshall_datasource() {
         let res: config =
             serde_json::from_str(include_str!("../tests/fixtures/datasource_test.json")).unwrap();
-        assert_eq!(res.datasource.as_ref().map(|x| x.is_empty()), Some(false));
+        assert_eq!(res.data.as_ref().map(|x| x.is_empty()), Some(false));
         assert_eq!(
-            res.datasource.as_ref().map(|x| x.get(0).is_none()),
+            res.data.as_ref().map(|x| x.get(0).is_none()),
             Some(false)
         );
         let res_a = res
-            .datasource
+            .data
             .as_ref()
             .and_then(|x| x.get(0))
             .and_then(|x| match x {
@@ -500,13 +542,13 @@ mod test {
     fn test_unmarshall_block_type() {
         let res: config =
             serde_json::from_str(include_str!("../tests/fixtures/block_type_test.json")).unwrap();
-        assert_eq!(res.datasource.as_ref().map(|x| x.is_empty()), Some(false));
+        assert_eq!(res.data.as_ref().map(|x| x.is_empty()), Some(false));
         assert_eq!(
-            res.datasource.as_ref().map(|x| x.get(0).is_none()),
+            res.data.as_ref().map(|x| x.get(0).is_none()),
             Some(false)
         );
         let res_a = res
-            .datasource
+            .data
             .as_ref()
             .and_then(|x| x.get(0))
             .and_then(|x| match x {

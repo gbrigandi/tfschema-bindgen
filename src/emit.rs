@@ -187,7 +187,7 @@ where
         match format {
             TypeName(x) => {
                 if let Some(set) = known_sizes {
-                    if !set.contains(x.as_str()) {
+                    if !set.contains(x.as_str()) && !x.as_str().starts_with("Vec") {
                         return format!("Box<{}>", x);
                     }
                 }

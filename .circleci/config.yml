@@ -25,7 +25,7 @@ jobs:
       - run:
           name: Lint (clippy)
           command: |
-            cargo clippy --all-features -- -A clippy::box_vec
+            cargo clippy --all-features
   build:
     docker:
       - image: circleci/rust:buster
