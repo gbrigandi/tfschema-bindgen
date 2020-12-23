@@ -1,4 +1,9 @@
-#![allow(unused_imports, non_snake_case, non_camel_case_types, non_upper_case_globals)]
+#![allow(
+    unused_imports,
+    non_snake_case,
+    non_camel_case_types,
+    non_upper_case_globals
+)]
 use serde::{Deserialize, Serialize};
 use serde_bytes::ByteBuf as Bytes;
 use std::collections::BTreeMap as Map;
