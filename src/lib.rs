@@ -54,7 +54,7 @@
 //! use std::collections::BTreeMap as Map;
 //! use serde::{Serialize, Deserialize};
 //! use serde_bytes::ByteBuf as Bytes;
-//! 
+//!
 //! #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
 //! pub struct config {
 //!     #[serde(skip_serializing_if = "Option::is_none")]
@@ -64,20 +64,20 @@
 //!     #[serde(skip_serializing_if = "Option::is_none")]
 //!     pub resource: Option<Vec<resource_root>>,
 //! }
-//! 
+//!
 //! #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 //! pub enum data_root {
 //! }
-//! 
+//!
 //! #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 //! pub enum provider_root {
 //!     test_provider(Vec<test_provider_details>),
 //! }
-//! 
+//!
 //! #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 //! pub enum resource_root {
 //! }
-//! 
+//!
 //! #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
 //! pub struct test_provider_details {
 //!     #[serde(skip_serializing_if = "Option::is_none")]

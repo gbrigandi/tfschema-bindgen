@@ -162,7 +162,6 @@ pub fn export_schema_to_registry(
     Ok(r)
 }
 
-
 fn generate_config(
     roots: &BTreeMap<&str, Vec<&str>>,
     reg: &mut Registry,
@@ -308,12 +307,10 @@ fn inject_meta_arguments(blk: &mut Block) {
             attrs.insert("for_each".to_owned(), for_each_attr);
             attrs.insert("provider".to_owned(), provider_attr);
             ()
-        },
+        }
         None => (),
     }
-
 }
-
 
 fn export_block(
     namespace: Option<String>,
@@ -517,10 +514,7 @@ mod test {
         let res: config =
             serde_json::from_str(include_str!("../tests/fixtures/datasource_test.json")).unwrap();
         assert_eq!(res.data.as_ref().map(|x| x.is_empty()), Some(false));
-        assert_eq!(
-            res.data.as_ref().map(|x| x.get(0).is_none()),
-            Some(false)
-        );
+        assert_eq!(res.data.as_ref().map(|x| x.get(0).is_none()), Some(false));
         let res_a = res
             .data
             .as_ref()
@@ -543,10 +537,7 @@ mod test {
         let res: config =
             serde_json::from_str(include_str!("../tests/fixtures/block_type_test.json")).unwrap();
         assert_eq!(res.data.as_ref().map(|x| x.is_empty()), Some(false));
-        assert_eq!(
-            res.data.as_ref().map(|x| x.get(0).is_none()),
-            Some(false)
-        );
+        assert_eq!(res.data.as_ref().map(|x| x.get(0).is_none()), Some(false));
         let res_a = res
             .data
             .as_ref()

@@ -1,8 +1,13 @@
 /*--- GENERATED START ---*/
-#![allow(unused_imports, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-use std::collections::BTreeMap as Map;
-use serde::{Serialize, Deserialize};
+#![allow(
+    unused_imports,
+    non_snake_case,
+    non_camel_case_types,
+    non_upper_case_globals
+)]
+use serde::{Deserialize, Serialize};
 use serde_bytes::ByteBuf as Bytes;
+use std::collections::BTreeMap as Map;
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct config {
@@ -15,8 +20,7 @@ pub struct config {
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
-pub enum data_root {
-}
+pub enum data_root {}
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub enum provider_root {
@@ -24,8 +28,7 @@ pub enum provider_root {
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
-pub enum resource_root {
-}
+pub enum resource_root {}
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize, Default)]
 pub struct test_provider_details {
