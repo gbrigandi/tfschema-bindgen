@@ -300,15 +300,11 @@ fn inject_meta_arguments(blk: &mut Block) {
         ..Default::default()
     };
 
-    match blk.attributes.as_mut() {
-        Some(attrs) => {
-            attrs.insert("depends_on".to_owned(), depends_on_attr);
-            attrs.insert("count".to_owned(), count_attr);
-            attrs.insert("for_each".to_owned(), for_each_attr);
-            attrs.insert("provider".to_owned(), provider_attr);
-            ()
-        }
-        None => (),
+    if let Some(attrs) = blk.attributes.as_mut() {
+        attrs.insert("depends_on".to_owned(), depends_on_attr);
+        attrs.insert("count".to_owned(), count_attr);
+        attrs.insert("for_each".to_owned(), for_each_attr);
+        attrs.insert("provider".to_owned(), provider_attr);
     }
 }
 
