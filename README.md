@@ -76,7 +76,7 @@ pub enum datasource_root {
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub enum provider_root {
-   test_provider(Box<Vec<test_provider_details>>),
+   test_provider(Vec<test_provider_details>),
 }
 
 #[derive(Clone, Debug, PartialEq, PartialOrd, Serialize, Deserialize)]
