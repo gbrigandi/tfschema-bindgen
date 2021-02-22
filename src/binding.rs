@@ -158,16 +158,13 @@ pub fn export_schema_to_registry(
             }
         }
 
-        export_roots(&roots, &mut r)?;
-        generate_config(&roots, &mut r)?;
+        export_roots(&roots, &mut r);
+        generate_config(&roots, &mut r);
     }
     Ok(r)
 }
 
-fn generate_config(
-    roots: &BTreeMap<&str, Vec<&str>>,
-    reg: &mut Registry,
-) -> std::result::Result<(), Box<dyn std::error::Error>> {
+fn generate_config(roots: &BTreeMap<&str, Vec<&str>>, reg: &mut Registry) {
     let mut target_attrs = Vec::new();
 
     for root_name in roots.keys() {
@@ -183,13 +180,9 @@ fn generate_config(
         (None, "config".to_string()),
         ContainerFormat::Struct(target_attrs),
     );
-    Ok(())
 }
 
-fn export_roots(
-    roots: &BTreeMap<&str, Vec<&str>>,
-    reg: &mut Registry,
-) -> std::result::Result<(), Box<dyn std::error::Error>> {
+fn export_roots(roots: &BTreeMap<&str, Vec<&str>>, reg: &mut Registry) {
     for (root_name, root_members) in roots {
         let mut enumz = BTreeMap::new();
         for (pos, member) in root_members.iter().enumerate() {
@@ -212,7 +205,6 @@ fn export_roots(
             ContainerFormat::Enum(enumz),
         );
     }
-    Ok(())
 }
 
 fn export_attributes(
