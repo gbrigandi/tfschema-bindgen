@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-Apache-green.svg)](../LICENSE-APACHE)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](../LICENSE-MIT)
 
-This crate aims to compile schemas extracted from Terraform into Serde type definitions.
+This crate aims to compile schemas extracted from Terraform providers into Serde type definitions.
 
 ### Quick Start
 
