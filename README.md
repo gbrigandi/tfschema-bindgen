@@ -11,7 +11,7 @@ This crate aims to compile schemas extracted from Terraform into Serde type defi
 ### Quick Start
 
 A Terraform schema is required for generating Rust types responsible of deserialization and serialization.
-It can either be exported from your Terraform plan or manually generated.
+It can either be exported from your Terraform configuration or manually generated.
 We'll take the latter approach, therefore defining a reference schema with just one provider type having one attribute:
 
 ```json
@@ -138,7 +138,7 @@ cargo run --example quickstart
 In order to operate on Terraform configuration descriptors of third-party providers, Rust bindings have to be generated using the
 provided schema descriptor in the JSON format.
 
-Firstly, create a minimal Terraform plan referring declaring the target provider. The following is an example for enabling
+Firstly, create a minimal Terraform configuration declaring the target provider. The following is an example for enabling
 the Amazon Web Services (AWS) Terraform provider:
 
 ```code
@@ -147,13 +147,13 @@ provider "aws" {
 }
 ```
 
-Initialize the Terraform plan so that the provider is installed in the local environment:
+Initialize Terraform so that configured providers are installed in the local environment:
 
 ```bash
 terraform init
 ```
 
-Secondly, extract the schema for the providers defined in the Terraform plan, AWS in this case:
+Secondly, extract the schema for the providers defined in the Terraform configuration, AWS in this case:
 
 ```bash
 terraform providers schema -json > aws-provider-schema.json

@@ -79,6 +79,7 @@ pub struct Block {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "lowercase")]
 pub enum StringKind {
     Plain,
     Markdown,
@@ -127,6 +128,7 @@ pub fn export_schema_to_registry(
     roots.insert("data", Vec::<&str>::new());
 
     for (pn, pv) in &schema.provider_schemas {
+        let pn = pn.split('/').last().unwrap_or(pn);
         let ps = &pv.provider;
         export_block(None, &pn, ps.block.clone(), &mut r)?;
         if let Some(provider) = roots.get_mut("provider") {
@@ -314,49 +316,72 @@ fn export_block(
     blk: Block,
     reg: &mut Registry,
 ) -> std::result::Result<(), Box<dyn std::error::Error>> {
-    let cf1 = export_attributes(&blk.attributes.as_ref().unwrap())?;
-    //reg.insert((None, format!("{}_details", name)), cf1.clone().unwrap());
+    let mut cf1 = export_attributes(&blk.attributes.as_ref().unwrap())?;
     if let Some(bt) = &blk.block_types {
-        let mut inner_block_types = Vec::new();
         for (block_type_name, nested_block) in bt {
-            if let Some(attrs) = &nested_block.block.attributes {
-                let nested_cf = export_attributes(attrs)?;
-                let block_type_ns = namespace.clone().map_or_else(
-                    || format!("{}_block_type", name),
-                    |v| format!("{}_{}_block_type", name, v),
-                );
-                let block_type_fqn = namespace.clone().map_or_else(
-                    || format!("{}_block_type_{}", name, block_type_name.to_owned()),
-                    |v| format!("{}_{}_block_type_{}", name, v, block_type_name.to_owned()),
-                );
+            export_block_type(
+                namespace.as_ref(),
+                name,
+                block_type_name,
+                nested_block,
+                reg,
+                &mut cf1.as_mut().unwrap(),
+            )?;
+        }
+    }
 
-                reg.insert(
-                    (Some(block_type_ns), block_type_name.to_owned()),
-                    nested_cf.unwrap(),
-                );
-                inner_block_types.push((block_type_name, block_type_fqn));
+    reg.insert((None, format!("{}_details", name)), cf1.unwrap());
+
+    Ok(())
+}
+
+fn export_block_type(
+    namespace: Option<&String>,
+    parent_name: &str,
+    name: &str,
+    blk: &NestedBlock,
+    reg: &mut Registry,
+    cf: &mut ContainerFormat,
+) -> std::result::Result<(), Box<dyn std::error::Error>> {
+    let mut inner_block_types = Vec::new();
+    if let Some(attrs) = &blk.block.attributes {
+        let mut nested_cf = export_attributes(attrs)?;
+        let block_type_ns = namespace.clone().map_or_else(
+            || format!("{}_block_type", parent_name),
+            |v| format!("{}_{}_block_type", parent_name, v),
+        );
+        let block_type_fqn = namespace.clone().map_or_else(
+            || format!("{}_block_type_{}", parent_name, name.to_owned()),
+            |v| format!("{}_{}_block_type_{}", parent_name, v, name.to_owned()),
+        );
+
+        // export inner block types
+        if let Some(bt) = &blk.block.block_types {
+            for (block_type_name, nested_block) in bt {
+                export_block_type(
+                    namespace,
+                    name,
+                    block_type_name,
+                    nested_block,
+                    reg,
+                    &mut nested_cf.as_mut().unwrap(),
+                )?;
             }
         }
-
-        let cf2 = match cf1 {
-            Some(ContainerFormat::Struct(mut attrs)) => {
-                for (_, (n, fqn)) in inner_block_types.iter().enumerate() {
-                    attrs.push(Named {
-                        name: n.to_string(),
-                        value: Format::Option(Box::new(Format::Seq(Box::new(Format::TypeName(
-                            fqn.to_string(),
-                        ))))),
-                    });
-                }
-                Some(ContainerFormat::Struct(attrs))
-            }
-
-            _ => cf1,
-        };
-        reg.insert((None, format!("{}_details", name)), cf2.unwrap());
-    } else {
-        reg.insert((None, format!("{}_details", name)), cf1.clone().unwrap());
+        reg.insert((Some(block_type_ns), name.to_owned()), nested_cf.unwrap());
+        inner_block_types.push((name, block_type_fqn));
     }
+
+    if let ContainerFormat::Struct(ref mut attrs) = cf {
+        for (_, (n, fqn)) in inner_block_types.iter().enumerate() {
+            attrs.push(Named {
+                name: n.to_string(),
+                value: Format::Option(Box::new(Format::Seq(Box::new(Format::TypeName(
+                    fqn.to_string(),
+                ))))),
+            });
+        }
+    };
 
     Ok(())
 }
