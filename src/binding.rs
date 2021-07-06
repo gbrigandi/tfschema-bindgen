@@ -102,7 +102,7 @@ pub struct NestedBlock {
     block: Block,
     nesting_mode: Option<String>,
     min_items: Option<u8>,
-    max_items: Option<u8>,
+    max_items: Option<u16>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -448,11 +448,11 @@ mod test {
     name = "testing"
     version = "0.1.0"
     edition = "2018"
-    
+
     [dependencies]
     serde = { version = "1.0", features = ["derive"] }
     serde_bytes = "0.11"
-    
+
     [workspace]
     "#,
         )
