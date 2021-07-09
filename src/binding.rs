@@ -338,11 +338,11 @@ fn export_block_type(
     let mut inner_block_types = Vec::new();
     if let Some(attrs) = &blk.block.attributes {
         let mut nested_cf = export_attributes(attrs)?;
-        let block_type_ns = namespace.clone().map_or_else(
+        let block_type_ns = namespace.map_or_else(
             || format!("{}_block_type", parent_name),
             |v| format!("{}_{}_block_type", parent_name, v),
         );
-        let block_type_fqn = namespace.clone().map_or_else(
+        let block_type_fqn = namespace.map_or_else(
             || format!("{}_block_type_{}", parent_name, name.to_owned()),
             |v| format!("{}_{}_block_type_{}", parent_name, v, name.to_owned()),
         );
