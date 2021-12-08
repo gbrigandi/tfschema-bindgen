@@ -115,7 +115,7 @@ pub fn generate_serde(
 ) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let config = CodeGeneratorConfig::new(config.to_string());
 
-    CodeGenerator::new(&config).output(out, &registry)
+    CodeGenerator::new(&config).output(out, registry)
 }
 
 pub fn export_schema_to_registry(
@@ -130,7 +130,7 @@ pub fn export_schema_to_registry(
     for (pn, pv) in &schema.provider_schemas {
         let pn = pn.split('/').last().unwrap_or(pn);
         let ps = &pv.provider;
-        export_block(None, &pn, ps.block.clone(), &mut r)?;
+        export_block(None, pn, ps.block.clone(), &mut r)?;
         if let Some(provider) = roots.get_mut("provider") {
             provider.push(pn);
         }
@@ -141,7 +141,7 @@ pub fn export_schema_to_registry(
                 let mut b = i.block.clone();
                 inject_meta_arguments(&mut b);
 
-                export_block(Some("resource".to_owned()), &n, b, &mut r)?;
+                export_block(Some("resource".to_owned()), n, b, &mut r)?;
                 if let Some(resources) = roots.get_mut("resource") {
                     resources.push(n);
                 }
@@ -151,7 +151,7 @@ pub fn export_schema_to_registry(
         if let Some(dss) = &pv.data_source_schemas {
             for (n, i) in dss {
                 let b = i.block.clone();
-                export_block(Some("data_source".to_owned()), &n, b, &mut r)?;
+                export_block(Some("data_source".to_owned()), n, b, &mut r)?;
                 if let Some(resources) = roots.get_mut("data") {
                     resources.push(n);
                 }
@@ -308,7 +308,7 @@ fn export_block(
     blk: Block,
     reg: &mut Registry,
 ) -> std::result::Result<(), Box<dyn std::error::Error>> {
-    let mut cf1 = export_attributes(&blk.attributes.as_ref().unwrap())?;
+    let mut cf1 = export_attributes(blk.attributes.as_ref().unwrap())?;
     if let Some(bt) = &blk.block_types {
         for (block_type_name, nested_block) in bt {
             export_block_type(
@@ -317,7 +317,7 @@ fn export_block(
                 block_type_name,
                 nested_block,
                 reg,
-                &mut cf1.as_mut().unwrap(),
+                cf1.as_mut().unwrap(),
             )?;
         }
     }
@@ -356,7 +356,7 @@ fn export_block_type(
                     block_type_name,
                     nested_block,
                     reg,
-                    &mut nested_cf.as_mut().unwrap(),
+                    nested_cf.as_mut().unwrap(),
                 )?;
             }
         }

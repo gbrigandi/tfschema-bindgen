@@ -27,7 +27,7 @@ fn main() {
         .input
         .as_ref()
         .map(|input| read_tf_schema_from_file(input).unwrap());
-    let registry = export_schema_to_registry(&schema_deserialized.as_ref().unwrap())
+    let registry = export_schema_to_registry(schema_deserialized.as_ref().unwrap())
         .expect("Error exporting terraform provider schema to serde-reflection");
     let stdout = std::io::stdout();
     let mut out = stdout.lock();
